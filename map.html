@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drone Map</title>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <style>
+        body, html { margin: 0; padding: 0; height: 100%; }
+        #map { width: 100%; height: 100vh; }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+
+    <script>
+        var map; // Deklariere map global
+        var droneMarker; // Deklariere droneMarker global
+
+        // Funktion zum Aktualisieren der Position
+        let latitudes = [];
+        let longitudes = [];
+
+        function updatePosition(lat, lon) {
+            latitudes.push(lat);
+            longitudes.push(lon);
+
+            if (latitudes.length > 10) { // Mehr GPS-Werte sammeln
+                latitudes.shift(); // Entferne den ältesten Wert
+                longitudes.shift(); // Entferne den ältesten Wert
+            }
+
+            const avgLat = latitudes.reduce((a, b) => a + b) / latitudes.length;
+            const avgLon = longitudes.reduce((a, b) => a + b) / longitudes.length;
+
+            map.setView([avgLat, avgLon], 12); // Verwende den Durchschnitt für die Position
+            droneMarker.setLatLng([avgLat, avgLon]);
+        }
+
+        // Warte, bis Leaflet geladen ist
+        document.addEventListener("DOMContentLoaded", function () {
+            map = L.map('map').setView([48.1351, 11.5820], 12);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+            droneMarker = L.marker([48.1351, 11.5820]).addTo(map);
+
+            // Beispiel für Positionsaktualisierung (Test)
+            setInterval(() => {
+                var lat = 48.1351 + (Math.random() - 0.5) * 0.005;  // Weniger zufällige Bewegung für einen besseren Test
+                var lon = 11.5820 + (Math.random() - 0.5) * 0.005;  // Weniger zufällige Bewegung
+                updatePosition(lat, lon); // Aufruf der Funktion
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

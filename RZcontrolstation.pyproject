@@ -1,0 +1,9 @@
+{
+    "files": [
+        "widget.py",
+        "form.ui",
+        "groundstation.py",
+        "mavlink_interface.py",
+        "map.html"
+    ]
+}
